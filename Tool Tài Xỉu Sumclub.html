@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tool Tài Xỉu AI – SumClub</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: url('https://i.imgur.com/2Rzwr3X.jpg') no-repeat center center fixed;
+      background-size: cover;
+      color: #fff;
+      text-align: center;
+    }
+    h1 {
+      margin-top: 20px;
+      font-size: 28px;
+      text-shadow: 0 0 10px #0ff;
+    }
+    .input-box {
+      margin: 20px auto;
+      max-width: 400px;
+    }
+    input {
+      width: 90%;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: none;
+    }
+    button {
+      margin-top: 10px;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 18px;
+      background: linear-gradient(45deg, #0ff, #09f);
+      border: none;
+      color: #000;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover {
+      transform: scale(1.05);
+    }
+    .result-box {
+      margin-top: 30px;
+      font-size: 24px;
+      font-weight: bold;
+      text-shadow: 0 0 5px #0ff;
+    }
+    .history {
+      margin-top: 40px;
+      background: rgba(0,0,0,0.6);
+      padding: 10px;
+      border-radius: 10px;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+  </style>
+</head>
+<body>
+  <h1>🤖 Tool Dự Đoán Tài Xỉu - AI SumClub</h1>
+  <div class="input-box">
+    <input id="inputs" type="text" placeholder="Nhập 10 kết quả gần nhất (vd: 9,11,8,...)"/>
+    <button onclick="duDoan()">Dự đoán</button>
+    <audio id="clickSound" src="https://www.soundjay.com/buttons/sounds/button-10.mp3"></audio>
+  </div>
+  <div class="result-box" id="robotOutput">🔍 Đang chờ dữ liệu...</div>
+  <div class="history" id="historyBox">
+    <h3>Lịch sử dự đoán:</h3>
+    <ul id="historyList"></ul>
+  </div>
+
+  <script>
+    function duDoan() {
+      const audio = document.getElementById("clickSound");
+      audio.play();
+
+      const input = document.getElementById("inputs").value;
+      const resultBox = document.getElementById("robotOutput");
+      const historyList = document.getElementById("historyList");
+
+      if (!input) {
+        resultBox.textContent = "⚠️ Vui lòng nhập ít nhất 10 kết quả!";
+        return;
+      }
+
+      const numbers = input.split(',').map(n => parseInt(n.trim())).filter(n => !isNaN(n) && n >= 3 && n <= 18);
+
+      if (numbers.length < 10) {
+        resultBox.textContent = "⚠️ Cần đủ 10 kết quả từ 3 đến 18!";
+        return;
+      }
+
+      let countTai = 0;
+      let countXiu = 0;
+
+      numbers.forEach(num => {
+        if (num >= 11) countTai++;
+        else countXiu++;
+      });
+
+      const percentTai = Math.round((countTai / numbers.length) * 100);
+      const percentXiu = 100 - percentTai;
+
+      let result = "";
+      if (percentTai > percentXiu) {
+        result = `🤖 Dự đoán: 🔵 TÀI ${percentTai}%`;
+      } else if (percentTai < percentXiu) {
+        result = `🤖 Dự đoán: 🔴 XỈU ${percentXiu}%`;
+      } else {
+        result = `🤖 Dự đoán: ⚪ 50-50 (Khó đoán)`;
+      }
+
+      resultBox.textContent = result;
+
+      const li = document.createElement("li");
+      li.textContent = result + " | [" + numbers.join(", ") + "]";
+      historyList.prepend(li);
+    }
+  </script>
+</body>
+</html>
